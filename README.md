@@ -27,12 +27,60 @@ You can use our utility classes to hide/show a component based on giving amount:
 - `greaterthan` - Shows component when giving amount is greater than **{value}** - Example: `showifamount-greaterthan-10`
 - `between` - Shows component when giving amount is between **{valuemin}** and **{valuemax}** - Example: `showifamount-between-10-100`
 
+### Frequency
+
+You can also use the frequency of the donation to show/hide elements:
+
+`showifamount-frequency-{frequency}`
+
+- `onetime` - Shows component when donation is a one-time donation. - Example: `showifamount-frequency-onetime`
+- `monthly` - Shows component when donation is a monthly donation. - Example: `showifamount-frequency-monthly`
+- `quarterly` - Shows component when donation is a quarterly donation. - Example: `showifamount-frequency-quarterly`
+- `semiannual` - Shows component when donation is a semi-annual donation. - Example: `showifamount-frequency-semiannual`
+- `annual` - Shows component when donation is an annual donation. - Example: `showifamount-frequency-annual`
+
 ### Animations
 
 You can add some animations classes to make the transition between the two states look better:
 
 - `animate-replace` - Will animate the content switch using scale
 - `animate-vertical-slide` - Will animate the content switch using max-height
+
+## Examples
+
+### Show if amount is less than 10
+
+```html
+<div class="showifamount-lessthan-10">
+  This will show if the amount is less than 10
+</div>
+```
+
+You can also combine the frequency with the amount:
+
+```html
+<div class="showifamount-lessthan-10 showifamount-frequency-monthly">
+  This will show if the amount is less than 10 and the frequency is monthly
+</div>
+```
+
+### Show if amount is between 10 and 100 and frequency is annual
+
+```html
+<div class="showifamount-between-10-100 showifamount-frequency-annual">
+  This will show if the amount is between 10 and 100 and the frequency is annual
+</div>
+```
+
+### Show if amount is between 10 and 100 and frequency is annual with animation
+
+```html
+<div
+  class="showifamount-between-10-100 showifamount-frequency-annual animate-replace"
+>
+  This will show if the amount is between 10 and 100 and the frequency is annual
+</div>
+```
 
 ### IMPORTANT: This project only works with the Engaging Networks Pages.
 
