@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "."
+	},
+	{
+		"path": "../engrid-scripts"
+	},
+	{
+		"path": "../en-range-slider"
+	}
+],
+  "settings": {}
+}

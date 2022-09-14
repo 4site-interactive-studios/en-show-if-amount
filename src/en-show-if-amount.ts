@@ -1,5 +1,12 @@
 export class EnShowIfAmount {
   private _elements: NodeListOf<HTMLElement>;
+  private _frequencyList = {
+    ONETIME: "onetime",
+    MONTHLY: "monthly",
+    QUARTERLY: "quarterly",
+    SEMI_ANNUAL: "semiannual",
+    ANNUAL: "annual",
+  };
   constructor() {
     this.log("EN Show If Amount: Debug mode is on");
     if (!this.shouldRun()) {
@@ -45,18 +52,22 @@ export class EnShowIfAmount {
     this.log("EN Show If Amount: EngagingNetworks is ready");
     this._elements = document.querySelectorAll('[class*="showifamount"]');
     this.setAmount(this.getENAmount());
+    this.setFrequency(this.getFrequency());
     this.addEvents();
     this.checkElements();
   }
   private checkElements() {
     const amount = this.getAmount();
+    const frequency = this.getFrequency();
     this._elements.forEach((element) => {
-      this.lessthan(amount, element);
-      this.lessthanorequalto(amount, element);
-      this.equalto(amount, element);
-      this.greaterthanorequalto(amount, element);
-      this.greaterthan(amount, element);
-      this.between(amount, element);
+      if (this.checkFrequency(frequency, element)) {
+        this.lessthan(amount, element);
+        this.lessthanorequalto(amount, element);
+        this.equalto(amount, element);
+        this.greaterthanorequalto(amount, element);
+        this.greaterthan(amount, element);
+        this.between(amount, element);
+      }
     });
   }
 
@@ -70,7 +81,7 @@ export class EnShowIfAmount {
     });
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: ["data-en-amount"],
+      attributeFilter: ["data-en-amount", "data-en-frequency"],
     });
     const radios = "transaction.donationAmt";
     const other = "transaction.donationAmt.other";
@@ -112,6 +123,14 @@ export class EnShowIfAmount {
         this.setAmount(parseFloat(formAmountInput.value));
       });
     }
+    const frequency = document.querySelectorAll(
+      "[name='transaction.recurrfreq']"
+    ) as NodeListOf<HTMLInputElement>;
+    frequency.forEach((element) => {
+      element.addEventListener("change", () => {
+        this.setFrequency(element.value);
+      });
+    });
   }
 
   private log(message: string | object) {
@@ -136,6 +155,15 @@ export class EnShowIfAmount {
     }
     return true;
   }
+  private setFrequency(frequency: string) {
+    const freq =
+      this._frequencyList[
+        frequency.toUpperCase() as keyof typeof this._frequencyList
+      ] || "onetime";
+    // Add the frequency to the body data attribute
+    this.log(`EN Show If Amount: Setting frequency to ${freq}`);
+    document.body.setAttribute("data-en-frequency", freq);
+  }
   private setAmount(amount: number) {
     // Add the amount to the body data attribute
     this.log(`EN Show If Amount: Setting amount to ${amount}`);
@@ -152,6 +180,15 @@ export class EnShowIfAmount {
       window as any
     ).EngagingNetworks.require._defined.enjs.getDonationTotal();
   }
+  private getFrequency(): string {
+    const frequency = (
+      window as any
+    ).EngagingNetworks.require._defined.enjs.getFieldValue(
+      "recurrfreq"
+    ) as keyof typeof this._frequencyList;
+    return this._frequencyList[frequency] || "onetime";
+  }
+
   private getClassNameByOperand(
     classList: DOMTokenList,
     operand: string
@@ -266,5 +303,25 @@ export class EnShowIfAmount {
         element.classList.remove("en-open");
       }
     }
+  }
+  private checkFrequency(frequency: string, element: HTMLElement): boolean {
+    const showifamountClass = this.getClassNameByOperand(
+      element.classList,
+      "frequency"
+    );
+    if (showifamountClass) {
+      const frequencyCheck = showifamountClass.split("-").slice(-1)[0];
+      if (frequency === frequencyCheck) {
+        this.log(
+          `(frequency): Showing ${element.tagName} with class ${showifamountClass}`
+        );
+        element.classList.add("en-open");
+        return true;
+      } else {
+        element.classList.remove("en-open");
+        return false;
+      }
+    }
+    return true;
   }
 }
