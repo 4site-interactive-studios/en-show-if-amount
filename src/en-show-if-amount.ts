@@ -131,6 +131,18 @@ export class EnShowIfAmount {
         this.setFrequency(element.value);
       });
     });
+    const recurrency = document.querySelectorAll(
+      "[name='transaction.recurrpay']"
+    ) as NodeListOf<HTMLInputElement>;
+    recurrency.forEach((element) => {
+      element.addEventListener("change", () => {
+        if (element.type === "radio") {
+          this.setFrequency(element.value === "Y" ? "monthly" : "onetime");
+        } else if (element.type === "checkbox") {
+          this.setFrequency(element.checked ? "monthly" : "onetime");
+        }
+      });
+    });
   }
 
   private log(message: string | object) {
@@ -183,9 +195,17 @@ export class EnShowIfAmount {
   private getFrequency(): string {
     const frequency = (
       window as any
-    ).EngagingNetworks.require._defined.enjs.getFieldValue(
-      "recurrfreq"
-    ) as keyof typeof this._frequencyList;
+    ).EngagingNetworks.require._defined.enjs.getFieldValue("recurrfreq") as
+      | keyof typeof this._frequencyList
+      | "";
+    if (frequency === "") {
+      return (
+        window as any
+      ).EngagingNetworks.require._defined.enjs.getFieldValue("recurrpay") ===
+        "Y"
+        ? "monthly"
+        : "onetime";
+    }
     return this._frequencyList[frequency] || "onetime";
   }
 
